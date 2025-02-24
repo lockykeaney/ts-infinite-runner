@@ -14,6 +14,7 @@ import { warn } from "console";
 
 export class Player extends Actor {
   ascending = false;
+  isOnGround = false;
   isRunning = true;
 
   constructor() {
@@ -35,22 +36,26 @@ export class Player extends Actor {
   }
 
   override onPostUpdate(engine: Engine) {
-    if (!this.ascending && this.isInputActive(engine)) {
-      this.vel.y += -800; // negative is UP
-      this.ascending = true;
+    if (this.isInputActive(engine)) {
+      this.vel.y += -200; // negative is UP
     }
-    if (this.ascending && !this.isInputActive(engine)) {
-      this.vel.y -= -800;
-      this.ascending = false;
+    if (!this.isInputActive(engine) && !this.isOnGround) {
+      this.isOnGround = false;
+      this.vel.y -= -200;
+    }
+    if (!this.isInputActive(engine) && this.isOnGround) {
+      this.vel.y = 0;
     }
     // keep velocity from getting too big
-    // this.vel.y = clamp(this.vel.y, -500, 500);
-    console.log(this.vel, this.ascending);
+    this.vel.y = clamp(this.vel.y, -300, 300);
   }
 
   override onCollisionStart(_self: Collider, other: Collider): void {
     if (other.owner instanceof Ground) {
-      this.stop();
+      console.log("ground collision");
+      this.isOnGround = true;
+      this.vel.y = 0;
+      other.owner.moving = true;
     }
   }
   start() {}

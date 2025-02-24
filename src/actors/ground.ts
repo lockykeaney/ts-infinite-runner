@@ -1,5 +1,9 @@
-import { Actor, Vector, vec, Color } from "excalibur";
+import { Actor, Vector, vec, Color, EdgeCollider } from "excalibur";
 
+const edge = new EdgeCollider({
+  begin: vec(0, 0),
+  end: vec(100, 0),
+});
 export class Ground extends Actor {
   moving = false;
   constructor(pos: Vector) {
@@ -11,6 +15,10 @@ export class Ground extends Actor {
       z: 1,
       color: Color.fromHex("#bd9853"),
     });
+  }
+  onPostUpdate(_engine: ex.Engine, elapsedMs: number): void {
+    if (!this.moving) return;
+    this.pos.x += -1;
   }
 
   start() {
